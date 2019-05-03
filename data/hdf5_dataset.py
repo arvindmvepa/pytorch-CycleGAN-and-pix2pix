@@ -2,7 +2,7 @@ import os
 import random
 import numpy as np
 from PIL import Image
-from pydicom import dcmread
+import h5py
 from data.base_dataset import BaseDataset
 import torchvision.transforms as transforms
 
@@ -14,15 +14,12 @@ def is_image_file(filename):
     return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
 
 
-def make_dataset(dir, max_dataset_size=float("inf")):
-    images = []
-    assert os.path.isdir(dir), '%s is not a valid directory' % dir
+def make_dataset(txt_file, max_dataset_size=float("inf")):
+    assert os.path.exists(txt_file), '%s is not a valid file' % txt_file
 
-    for root, _, fnames in sorted(os.walk(dir)):
-        for fname in fnames:
-            if is_image_file(fname):
-                path = os.path.join(root, fname)
-                images.append(path)
+    fin = open(txt_file)
+    images = [line.strip().split('\t')[0] for line in iter(fin.readline, '')]
+
     return images[:min(max_dataset_size, len(images))]
 
 
@@ -105,9 +102,9 @@ def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, conve
     return transforms.Compose(transform_list)
 
 
-class KaggleDataset(BaseDataset):
+class Hdf5Dataset(BaseDataset):
     """
-    This dataset class can load unaligned/unpaired Kaggle datasets.
+    This dataset class can load unaligned/unpaired hdf5 datasets.
 
     It requires two directories to host training images from domain A '/path/to/data/trainA'
     and from domain B '/path/to/data/trainB' respectively.
@@ -123,11 +120,11 @@ class KaggleDataset(BaseDataset):
             opt (Option class) -- stores all the experiment flags; needs to be a subclass of BaseOptions
         """
         BaseDataset.__init__(self, opt)
-        self.dir_A = os.path.join(opt.dataroot, opt.phase + 'A')  # create a path '/path/to/data/trainA'
-        self.dir_B = os.path.join(opt.dataroot, opt.phase + 'B')  # create a path '/path/to/data/trainB'
+        self.txt_file_A = opt.txt_file_A
+        self.txt_file_B = opt.txt_file_B
 
-        self.A_paths = sorted(make_dataset(self.dir_A, opt.max_dataset_size))   # load images from '/path/to/data/trainA'
-        self.B_paths = sorted(make_dataset(self.dir_B, opt.max_dataset_size))    # load images from '/path/to/data/trainB'
+        self.A_paths = sorted(make_dataset(self.txt_file_A, opt.max_dataset_size))   # load images from '/path/to/data/trainA'
+        self.B_paths = sorted(make_dataset(self.txt_file_B, opt.max_dataset_size))    # load images from '/path/to/data/trainB'
         self.A_size = len(self.A_paths)  # get the size of dataset A
         self.B_size = len(self.B_paths)  # get the size of dataset B
         btoA = self.opt.direction == 'BtoA'
@@ -177,11 +174,22 @@ class KaggleDataset(BaseDataset):
         """
         Read dicoms
         """
-        image = dcmread(img_path).pixel_array
+        image, _ = read_hdf5(img_path)
 
         # Gray scale add channel axis
         if len(image.shape) == 2:
             image = image[:, :, np.newaxis]
 
         return image
+
+
+def read_hdf5(filename, read_keys=["data", "label"]):
+    with h5py.File(filename, 'r') as fin:
+        data_dict = {}
+        for k in read_keys:
+            if k == "data":
+                data_dict["data"] = np.squeeze(np.array(fin[k])).astype(np.float32)
+            if k == "label":
+                data_dict["label"] = np.squeeze(np.array(fin[k])).astype(np.int64)
+    return data_dict["data"], data_dict["label"]
 
