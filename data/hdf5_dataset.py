@@ -68,8 +68,8 @@ def __print_size_warning(ow, oh, w, h):
         __print_size_warning.has_printed = True
 
 
-def get_transform(opt, params=None, mode='I', grayscale=False, method=Image.BICUBIC, convert=True):
-    transform_list = [transforms.ToPILImage(mode=mode)]
+def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, convert=True):
+    transform_list = [transforms.ToPILImage()]
 
     # unknown behavior for images that range from 0 to 65535
     # if grayscale:
@@ -205,7 +205,7 @@ def read_hdf5(filename, read_keys=["data", "label"]):
         data_dict = {}
         for k in read_keys:
             if k == "data":
-                data_dict["data"] = np.squeeze(np.array(fin[k])).astype(np.int32)
+                data_dict["data"] = np.squeeze(np.array(fin[k])).astype(np.float32)
             if k == "label":
                 data_dict["label"] = np.squeeze(np.array(fin[k])).astype(np.int64)
     return data_dict["data"], data_dict["label"]
