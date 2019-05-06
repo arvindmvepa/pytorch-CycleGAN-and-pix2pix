@@ -5,6 +5,8 @@ from PIL import Image
 import h5py
 from data.base_dataset import BaseDataset
 import torchvision.transforms as transforms
+import torch
+
 
 
 IMG_EXTENSIONS = ['.dcm', '.DCM']
@@ -98,7 +100,9 @@ def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, conve
     if convert:
         transform_list += [transforms.ToTensor()]
         if grayscale:
-            transform_list += [transforms.Normalize((32767.5,), (32767.5,))]
+            # transform_list += [transforms.Normalize((32767.5,), (32767.5,))]
+            transform_list.append(transforms.Lambda(lambda x:
+                                                    ((x - torch.min(x)) / (torch.max(x) - torch.min(x))) * 2.0 - 1.0))
         else:
             transform_list += [transforms.Normalize((32767.5, 32767.5, 32767.5), (32767.5, 32767.5, 32767.5))]
         """
