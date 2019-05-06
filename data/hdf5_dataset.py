@@ -68,22 +68,24 @@ def __print_size_warning(ow, oh, w, h):
         __print_size_warning.has_printed = True
 
 
-def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, convert=True):
-    transform_list = [transforms.ToPILImage()]
-    if grayscale:
-        transform_list.append(transforms.Grayscale(1))
+def get_transform(opt, params=None, mode='I;16', grayscale=False, method=Image.BICUBIC, convert=True):
+    transform_list = [transforms.ToPILImage(mode=mode)]
+
+    # unknown behavior for images that range from 0 to 65535
+    # if grayscale:
+    # transform_list.append(transforms.Grayscale(1))
+
+    # pre-process methods
     if 'resize' in opt.preprocess:
         osize = [opt.load_size, opt.load_size]
         transform_list.append(transforms.Resize(osize, method))
     elif 'scale_width' in opt.preprocess:
         transform_list.append(transforms.Lambda(lambda img: __scale_width(img, opt.load_size, method)))
-
     if 'crop' in opt.preprocess:
         if params is None:
             transform_list.append(transforms.RandomCrop(opt.crop_size))
         else:
             transform_list.append(transforms.Lambda(lambda img: __crop(img, params['crop_pos'], opt.crop_size)))
-
     if opt.preprocess == 'none':
         transform_list.append(transforms.Lambda(lambda img: __make_power_2(img, base=4, method=method)))
 
@@ -96,9 +98,24 @@ def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, conve
     if convert:
         transform_list += [transforms.ToTensor()]
         if grayscale:
+            transform_list += [transforms.Normalize((32767.5,), (32767.5,))]
+        else:
+            transform_list += [transforms.Normalize((32767.5, 32767.5, 32767.5), (32767.5, 32767.5, 32767.5))]
+        """
+        if grayscale:
             transform_list += [transforms.Normalize((0.5,), (0.5,))]
         else:
             transform_list += [transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+        """
+        """
+        if opt.minmax:
+            transforms.append(Lambda(lambda x: ((x - torch.min(x)) / (torch.max(x) - torch.min(x)))))
+            print("minmax applied, {}".format(minmax))
+        scale_1_1 = self.train_kwargs.get('scale_1_1', False)
+        if scale_1_1:
+            transforms.append(Lambda(lambda x: ((x - torch.min(x)) / (torch.max(x) - torch.min(x))) * 2.0 - 1.0))
+            print("scale_1_1 applied, {}".format(scale_1_1))
+        """
     return transforms.Compose(transform_list)
 
 
@@ -188,7 +205,7 @@ def read_hdf5(filename, read_keys=["data", "label"]):
         data_dict = {}
         for k in read_keys:
             if k == "data":
-                data_dict["data"] = np.squeeze(np.array(fin[k])).astype(np.float32)
+                data_dict["data"] = np.squeeze(np.array(fin[k])).astype(np.uint16)
             if k == "label":
                 data_dict["label"] = np.squeeze(np.array(fin[k])).astype(np.int64)
     return data_dict["data"], data_dict["label"]
