@@ -1,0 +1,2 @@
+set -ex
+python train.py --txt_file_A /mnt/nas/experiments/CR-FRACTURE/amvepa/googlenet-CR-FRACTUR_512-squash_gray_NOAUG_ACQ-DEV-NSE999_2019Apr03/00.5_10.5_rr0_rs0.1_rcFalse_bl0.0001_gamma0.1_step_epochs20-40_num_epochs50/label_0_train_files.txt --txt_file_B /mnt/nas/experiments/CR-FRACTURE/amvepa/googlenet-CR-FRACTUR_512-squash_gray_NOAUG_ACQ-DEV-NSE999_2019Apr03/00.5_10.5_rr0_rs0.1_rcFalse_bl0.0001_gamma0.1_step_epochs20-40_num_epochs50/label_1_train_files.txt --name hdf5_cyclegan --dataset_mode hdf5 --model cycle_gan --display_port 8098
