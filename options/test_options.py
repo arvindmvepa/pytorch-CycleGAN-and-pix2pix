@@ -8,17 +8,17 @@ class TestOptions(BaseOptions):
     """
 
     def initialize(self):
-        opt = super(TestOptions, self).initialize()
-        opt['ntest']=float("inf")
-        opt['results_dir'] = './results/'
-        opt['aspect_ratio'] = 1.0
-        opt['phase'] = 'test'
-        opt['eval'] = True
-        opt['num_test'] = 50
-        if 'model' not in opt:
-            opt['model'] = 'test'
+        defaults = super(TestOptions, self).initialize()
+        defaults['ntest']=float("inf")
+        defaults['results_dir'] = './results/'
+        defaults['aspect_ratio'] = 1.0
+        defaults['phase'] = 'test'
+        defaults['eval'] = True
+        defaults['num_test'] = 50
+        if 'model' not in defaults:
+            defaults['model'] = 'test'
         # To avoid cropping, the load_size should be the same as crop_size
-        if 'load_size' not in opt:
-            opt['load_size'] = opt['crop_size']
+        if 'load_size' not in defaults:
+            defaults['load_size'] = defaults['crop_size']
         self.isTrain = False
-        return opt
+        return defaults

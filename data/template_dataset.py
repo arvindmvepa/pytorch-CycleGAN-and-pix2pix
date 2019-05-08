@@ -19,7 +19,7 @@ from data.base_dataset import BaseDataset, get_transform
 class TemplateDataset(BaseDataset):
     """A template dataset class for you to implement custom datasets."""
     @staticmethod
-    def modify_options(opt, is_train):
+    def modify_options(opt, defaults, is_train):
         """Add new dataset-specific options, and rewrite default values for existing options.
 
         Parameters:
@@ -29,12 +29,10 @@ class TemplateDataset(BaseDataset):
         Returns:
             the modified opt.
         """
-        opt['new_dataset_option'] = 1.0
-        if 'max_dataset_size' not in opt:
-            opt['max_dataset_size'] = 10
-        if 'new_dataset_option' not in opt:
-            opt['new_dataset_option'] =2.0  # specify dataset-specific default values
-        return opt
+        defaults['new_dataset_option'] = 1.0
+        defaults['max_dataset_size'] = 10
+        defaults['new_dataset_option'] = 2.0  # specify dataset-specific default values
+        return opt, defaults
 
     def __init__(self, opt):
         """Initialize this dataset class.

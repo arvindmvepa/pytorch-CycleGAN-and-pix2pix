@@ -22,7 +22,7 @@ from . import networks
 
 class TemplateModel(BaseModel):
     @staticmethod
-    def modify_options(opt, is_train=True):
+    def modify_options(opt, defaults, is_train=True):
         """Add new model-specific options and rewrite default values for existing options.
 
         Parameters:
@@ -32,11 +32,10 @@ class TemplateModel(BaseModel):
         Returns:
             the modified opt.
         """
-        if 'dataset_mode' not in opt:
-            opt['dataset_mode'] = 'aligned'  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        defaults['dataset_mode'] = 'aligned'  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
         if is_train:
-            opt['lambda_regression']=1.0
-        return opt
+            defaults['lambda_regression']=1.0
+        return opt, defaults
 
     def __init__(self, opt):
         """Initialize this model class.

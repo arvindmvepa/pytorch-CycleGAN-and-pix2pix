@@ -29,7 +29,7 @@ class BaseDataset(data.Dataset, ABC):
         self.opt = opt
 
     @staticmethod
-    def modify_options(opt, is_train):
+    def modify_options(opt, defaults, is_train):
         """Add new dataset-specific options, and rewrite default values for existing options.
 
         Parameters:
@@ -39,7 +39,7 @@ class BaseDataset(data.Dataset, ABC):
         Returns:
             the modified opt.
         """
-        return opt
+        return opt, defaults
 
     @abstractmethod
     def __len__(self):

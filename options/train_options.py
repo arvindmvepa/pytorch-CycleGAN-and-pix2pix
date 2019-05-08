@@ -8,32 +8,32 @@ class TrainOptions(BaseOptions):
     """
 
     def initialize(self):
-        opt = super(TrainOptions, self).initialize()
+        defaults = super(TrainOptions, self).initialize()
         # visdom and HTML visualization parameters
-        opt['display_freq'] = 400
-        opt['display_ncols'] = 4
-        opt['display_id'] = 1
-        opt['display_server'] = "http://localhost"
-        opt['display_env'] = "main"
-        opt['display_port'] = 8097
-        opt['update_html_freq'] = 1000
-        opt['print_freq'] = 100
-        opt['no_html'] = True
+        defaults['display_freq'] = 400
+        defaults['display_ncols'] = 4
+        defaults['display_id'] = 1
+        defaults['display_server'] = "http://localhost"
+        defaults['display_env'] = "main"
+        defaults['display_port'] = 8097
+        defaults['update_html_freq'] = 1000
+        defaults['print_freq'] = 100
+        defaults['no_html'] = True
         # network saving and loading parameters
-        opt['save_latest_freq'] = 5000
-        opt['save_epoch_freq'] = 5
-        opt['save_by_iter'] = True
-        opt['continue_train'] = True
-        opt['epoch_count'] = 1
-        opt['phase'] = 'train'
+        defaults['save_latest_freq'] = 5000
+        defaults['save_epoch_freq'] = 5
+        defaults['save_by_iter'] = True
+        defaults['continue_train'] = True
+        defaults['epoch_count'] = 1
+        defaults['phase'] = 'train'
         # training parameters
-        opt['niter'] = 100
-        opt['niter_decay'] = 100
-        opt['beta1'] = 0.5
-        opt['lr'] = 0.0002
-        opt['gan_mode'] = 'lsgan'
-        opt['pool_size'] = 50
-        opt['lr_policy'] = 'linear'
-        opt['lr_decay_iters'] = 50
+        defaults['niter'] = 100
+        defaults['niter_decay'] = 100
+        defaults['beta1'] = 0.5
+        defaults['lr'] = 0.0002
+        defaults['gan_mode'] = 'lsgan'
+        defaults['pool_size'] = 50
+        defaults['lr_policy'] = 'linear'
+        defaults['lr_decay_iters'] = 50
         self.isTrain = True
-        return opt
+        return defaults

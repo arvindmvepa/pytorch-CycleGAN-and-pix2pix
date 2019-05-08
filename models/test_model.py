@@ -9,7 +9,7 @@ class TestModel(BaseModel):
     See the test instruction for more details.
     """
     @staticmethod
-    def modify_options(opt, is_train=True):
+    def modify_options(opt, defaults, is_train=True):
         """Add new dataset-specific options, and rewrite default values for existing options.
 
         Parameters:
@@ -23,10 +23,9 @@ class TestModel(BaseModel):
         You need to specify the network using the option '--model_suffix'.
         """
         assert not is_train, 'TestModel cannot be used during training time'
-        if opt not in opt['dataset_mode']:
-            opt['dataset_mode'] = 'single'
-        opt['model_suffix'] = ''
-        return opt
+        defaults['dataset_mode'] = 'single'
+        defaults['model_suffix'] = ''
+        return opt, defaults
 
     def __init__(self, opt):
         """Initialize the pix2pix class.

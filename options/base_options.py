@@ -56,7 +56,7 @@ class BaseOptions():
         self.initialized = True
         return defaults
 
-    def gather_options(self):
+    def gather_options(self, opt):
         """Initialize our parser with basic options(only once).
         Add additional model-specific and dataset-specific options.
         These options are defined in the <modify_commandline_options> function
@@ -68,14 +68,17 @@ class BaseOptions():
         # modify model-related parser options
         model_name = opt["model"]
         model_option_setter = models.get_option_setter(model_name)
-        opt = model_option_setter(opt, self.isTrain)
+        opt, defaults = model_option_setter(opt, defaults, self.isTrain)
 
         # modify dataset-related parser options
         dataset_name = opt.dataset_mode
         dataset_option_setter = data.get_option_setter(dataset_name)
-        opt = dataset_option_setter(opt, self.isTrain)
+        opt, defaults = dataset_option_setter(opt, defaults, self.isTrain)
 
-        # save and return the parser
+        # update default options with user provided options
+        opt = dict(defaults, **opt)
+
+        # save and return the options dictionary
         self.opt = opt
         return opt
 

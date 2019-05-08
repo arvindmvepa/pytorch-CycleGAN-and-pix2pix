@@ -44,7 +44,7 @@ class BaseModel(ABC):
         self.metric = 0  # used for learning rate policy 'plateau'
 
     @staticmethod
-    def modify_options(opt, is_train):
+    def modify_options(opt, defaults, is_train):
         """Add new model-specific options, and rewrite default values for existing options.
 
         Parameters:
@@ -54,7 +54,7 @@ class BaseModel(ABC):
         Returns:
             the modified opt.
         """
-        return opt
+        return opt, defaults
 
     @abstractmethod
     def set_input(self, input):

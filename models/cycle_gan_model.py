@@ -17,7 +17,7 @@ class CycleGANModel(BaseModel):
     CycleGAN paper: https://arxiv.org/pdf/1703.10593.pdf
     """
     @staticmethod
-    def modify_options(opt, is_train=True):
+    def modify_options(opt, defaults, is_train=True):
         """Add new dataset-specific opt, and rewrite default values for existing opt.
 
         Parameters:
@@ -36,13 +36,12 @@ class CycleGANModel(BaseModel):
         Identity loss (optional): lambda_identity * (||G_A(B) - B|| * lambda_B + ||G_B(A) - A|| * lambda_A) (Sec 5.2 "Photo generation from paintings" in the paper)
         Dropout is not used in the original CycleGAN paper.
         """
-        if "no_dropout" not in opt:
-            opt["no_dropout"]=True
+        defaults["no_dropout"]=True
         if is_train:
-            opt['lambda_A']=10.0
-            opt['lambda_B']=10.0
-            opt['lambda_identity']=0.5
-        return opt
+            defaults['lambda_A']=10.0
+            defaults['lambda_B']=10.0
+            defaults['lambda_identity']=0.5
+        return opt, defaults
 
     def __init__(self, opt):
         """Initialize the CycleGAN class.
