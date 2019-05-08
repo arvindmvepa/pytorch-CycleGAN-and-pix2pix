@@ -29,17 +29,17 @@ class BaseDataset(data.Dataset, ABC):
         self.opt = opt
 
     @staticmethod
-    def modify_commandline_options(parser, is_train):
+    def modify_options(opt, is_train):
         """Add new dataset-specific options, and rewrite default values for existing options.
 
         Parameters:
-            parser          -- original option parser
+            opt          -- original option opt
             is_train (bool) -- whether training phase or test phase. You can use this flag to add training-specific or test-specific options.
 
         Returns:
-            the modified parser.
+            the modified opt.
         """
-        return parser
+        return opt
 
     @abstractmethod
     def __len__(self):
@@ -63,14 +63,14 @@ def get_params(opt, size):
     w, h = size
     new_h = h
     new_w = w
-    if opt.preprocess == 'resize_and_crop':
-        new_h = new_w = opt.load_size
-    elif opt.preprocess == 'scale_width_and_crop':
-        new_w = opt.load_size
-        new_h = opt.load_size * h // w
+    if opt['preprocess'] == 'resize_and_crop':
+        new_h = new_w = opt['load_size']
+    elif opt['preprocess'] == 'scale_width_and_crop':
+        new_w = opt['load_size']
+        new_h = opt['load_size'] * h // w
 
-    x = random.randint(0, np.maximum(0, new_w - opt.crop_size))
-    y = random.randint(0, np.maximum(0, new_h - opt.crop_size))
+    x = random.randint(0, np.maximum(0, new_w - opt['crop_size']))
+    y = random.randint(0, np.maximum(0, new_h - opt['crop_size']))
 
     flip = random.random() > 0.5
 
@@ -81,22 +81,22 @@ def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, conve
     transform_list = []
     if grayscale:
         transform_list.append(transforms.Grayscale(1))
-    if 'resize' in opt.preprocess:
-        osize = [opt.load_size, opt.load_size]
+    if 'resize' in opt['preprocess']:
+        osize = [opt['load_size'], opt['load_size']]
         transform_list.append(transforms.Resize(osize, method))
-    elif 'scale_width' in opt.preprocess:
-        transform_list.append(transforms.Lambda(lambda img: __scale_width(img, opt.load_size, method)))
+    elif 'scale_width' in opt['preprocess']:
+        transform_list.append(transforms.Lambda(lambda img: __scale_width(img, opt['load_size'], method)))
 
-    if 'crop' in opt.preprocess:
+    if 'crop' in opt['preprocess']:
         if params is None:
-            transform_list.append(transforms.RandomCrop(opt.crop_size))
+            transform_list.append(transforms.RandomCrop(opt['crop_size']))
         else:
-            transform_list.append(transforms.Lambda(lambda img: __crop(img, params['crop_pos'], opt.crop_size)))
+            transform_list.append(transforms.Lambda(lambda img: __crop(img, params['crop_pos'], opt['crop_size'])))
 
-    if opt.preprocess == 'none':
+    if opt['preprocess'] == 'none':
         transform_list.append(transforms.Lambda(lambda img: __make_power_2(img, base=4, method=method)))
 
-    if not opt.no_flip:
+    if not opt['no_flip']:
         if params is None:
             transform_list.append(transforms.RandomHorizontalFlip())
         elif params['flip']:

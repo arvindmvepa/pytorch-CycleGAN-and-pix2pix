@@ -78,20 +78,20 @@ def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, conve
     # transform_list.append(transforms.Grayscale(1))
 
     # pre-process methods
-    if 'resize' in opt.preprocess:
-        osize = [opt.load_size, opt.load_size]
+    if 'resize' in opt['preprocess']:
+        osize = [opt['load_size'], opt['load_size']]
         transform_list.append(transforms.Resize(osize, method))
-    elif 'scale_width' in opt.preprocess:
-        transform_list.append(transforms.Lambda(lambda img: __scale_width(img, opt.load_size, method)))
-    if 'crop' in opt.preprocess:
+    elif 'scale_width' in opt['preprocess']:
+        transform_list.append(transforms.Lambda(lambda img: __scale_width(img, opt['load_size'], method)))
+    if 'crop' in opt['preprocess']:
         if params is None:
-            transform_list.append(transforms.RandomCrop(opt.crop_size))
+            transform_list.append(transforms.RandomCrop(opt['crop_size']))
         else:
-            transform_list.append(transforms.Lambda(lambda img: __crop(img, params['crop_pos'], opt.crop_size)))
-    if opt.preprocess == 'none':
+            transform_list.append(transforms.Lambda(lambda img: __crop(img, params['crop_pos'], opt['crop_size'])))
+    if opt['preprocess'] == 'none':
         transform_list.append(transforms.Lambda(lambda img: __make_power_2(img, base=4, method=method)))
 
-    if not opt.no_flip:
+    if not opt['no_flip']:
         if params is None:
             transform_list.append(transforms.RandomHorizontalFlip())
         elif params['flip']:
@@ -141,16 +141,16 @@ class Hdf5Dataset(BaseDataset):
             opt (Option class) -- stores all the experiment flags; needs to be a subclass of BaseOptions
         """
         BaseDataset.__init__(self, opt)
-        self.txt_file_A = opt.txt_file_A
-        self.txt_file_B = opt.txt_file_B
+        self.txt_file_A = opt['txt_file_A']
+        self.txt_file_B = opt['txt_file_B']
 
-        self.A_paths = sorted(make_dataset(self.txt_file_A, opt.max_dataset_size))   # load images from '/path/to/data/trainA'
-        self.B_paths = sorted(make_dataset(self.txt_file_B, opt.max_dataset_size))    # load images from '/path/to/data/trainB'
+        self.A_paths = sorted(make_dataset(self.txt_file_A, opt['max_dataset_size']))   # load images from '/path/to/data/trainA'
+        self.B_paths = sorted(make_dataset(self.txt_file_B, opt['max_dataset_size']))    # load images from '/path/to/data/trainB'
         self.A_size = len(self.A_paths)  # get the size of dataset A
         self.B_size = len(self.B_paths)  # get the size of dataset B
-        btoA = self.opt.direction == 'BtoA'
-        input_nc = self.opt.output_nc if btoA else self.opt.input_nc       # get the number of channels of input image
-        output_nc = self.opt.input_nc if btoA else self.opt.output_nc      # get the number of channels of output image
+        btoA = self.opt['direction'] == 'BtoA'
+        input_nc = self.opt['output_nc'] if btoA else self.opt['input_nc']       # get the number of channels of input image
+        output_nc = self.opt['input_nc'] if btoA else self.opt['output_nc']      # get the number of channels of output image
         self.transform_A = get_transform(self.opt, grayscale=(input_nc == 1))
         self.transform_B = get_transform(self.opt, grayscale=(output_nc == 1))
 
@@ -167,7 +167,7 @@ class Hdf5Dataset(BaseDataset):
             B_paths (str)    -- image paths
         """
         A_path = self.A_paths[index % self.A_size]  # make sure index is within then range
-        if self.opt.serial_batches:   # make sure index is within then range
+        if self.opt['serial_batches']:   # make sure index is within then range
             index_B = index % self.B_size
         else:   # randomize the index for domain B to avoid fixed pairs.
             index_B = random.randint(0, self.B_size - 1)

@@ -30,11 +30,11 @@ class BaseModel(ABC):
             -- self.optimizers (optimizer list):    define and initialize optimizers. You can define one optimizer for each network. If two networks are updated at the same time, you can use itertools.chain to group them. See cycle_gan_model.py for an example.
         """
         self.opt = opt
-        self.gpu_ids = opt.gpu_ids
-        self.isTrain = opt.isTrain
+        self.gpu_ids = opt['gpu_ids']
+        self.isTrain = opt['isTrain']
         self.device = torch.device('cuda:{}'.format(self.gpu_ids[0])) if self.gpu_ids else torch.device('cpu')  # get device name: CPU or GPU
-        self.save_dir = os.path.join(opt.checkpoints_dir, opt.name)  # save all the checkpoints to save_dir
-        if opt.preprocess != 'scale_width':  # with [scale_width], input images might have different sizes, which hurts the performance of cudnn.benchmark.
+        self.save_dir = os.path.join(opt['checkpoints_dir'], opt['name'])  # save all the checkpoints to save_dir
+        if opt['preprocess'] != 'scale_width':  # with [scale_width], input images might have different sizes, which hurts the performance of cudnn.benchmark.
             torch.backends.cudnn.benchmark = True
         self.loss_names = []
         self.model_names = []
@@ -44,17 +44,17 @@ class BaseModel(ABC):
         self.metric = 0  # used for learning rate policy 'plateau'
 
     @staticmethod
-    def modify_commandline_options(parser, is_train):
+    def modify_options(opt, is_train):
         """Add new model-specific options, and rewrite default values for existing options.
 
         Parameters:
-            parser          -- original option parser
+            opt          -- original option opt
             is_train (bool) -- whether training phase or test phase. You can use this flag to add training-specific or test-specific options.
 
         Returns:
-            the modified parser.
+            the modified opt.
         """
-        return parser
+        return opt
 
     @abstractmethod
     def set_input(self, input):
@@ -83,10 +83,10 @@ class BaseModel(ABC):
         """
         if self.isTrain:
             self.schedulers = [networks.get_scheduler(optimizer, opt) for optimizer in self.optimizers]
-        if not self.isTrain or opt.continue_train:
-            load_suffix = 'iter_%d' % opt.load_iter if opt.load_iter > 0 else opt.epoch
+        if not self.isTrain or opt['continue_train']:
+            load_suffix = 'iter_%d' % opt['load_iter'] if opt['load_iter'] > 0 else opt['epoch']
             self.load_networks(load_suffix)
-        self.print_networks(opt.verbose)
+        self.print_networks(opt['verbose'])
 
     def eval(self):
         """Make models eval mode during test time"""
@@ -116,7 +116,7 @@ class BaseModel(ABC):
     def update_learning_rate(self):
         """Update learning rates for all the networks; called at the end of every epoch"""
         for scheduler in self.schedulers:
-            if self.opt.lr_policy == 'plateau':
+            if self.opt['lr_policy'] == 'plateau':
                 scheduler.step(self.metric)
             else:
                 scheduler.step()

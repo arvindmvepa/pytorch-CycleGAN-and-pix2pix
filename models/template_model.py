@@ -22,21 +22,21 @@ from . import networks
 
 class TemplateModel(BaseModel):
     @staticmethod
-    def modify_commandline_options(parser, is_train=True):
+    def modify_options(opt, is_train=True):
         """Add new model-specific options and rewrite default values for existing options.
 
         Parameters:
-            parser -- the option parser
+            opt -- the option opt
             is_train -- if it is training phase or test phase. You can use this flag to add training-specific or test-specific options.
 
         Returns:
-            the modified parser.
+            the modified opt.
         """
-        parser.set_defaults(dataset_mode='aligned')  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        if 'dataset_mode' not in opt:
+            opt['dataset_mode'] = 'aligned'  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
         if is_train:
-            parser.add_argument('--lambda_regression', type=float, default=1.0, help='weight for the regression loss')  # You can define new arguments for this model.
-
-        return parser
+            opt['lambda_regression']=1.0
+        return opt
 
     def __init__(self, opt):
         """Initialize this model class.
@@ -57,14 +57,14 @@ class TemplateModel(BaseModel):
         # you can use opt.isTrain to specify different behaviors for training and test. For example, some networks will not be used during test, and you don't need to load them.
         self.model_names = ['G']
         # define networks; you can use opt.isTrain to specify different behaviors for training and test.
-        self.netG = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf, opt.netG, gpu_ids=self.gpu_ids)
+        self.netG = networks.define_G(opt['input_nc'], opt['output_nc'], opt['ngf'], opt['netG'], gpu_ids=self.gpu_ids)
         if self.isTrain:  # only defined during training time
             # define your loss functions. You can use losses provided by torch.nn such as torch.nn.L1Loss.
             # We also provide a GANLoss class "networks.GANLoss". self.criterionGAN = networks.GANLoss().to(self.device)
             self.criterionLoss = torch.nn.L1Loss()
             # define and initialize optimizers. You can define one optimizer for each network.
             # If two networks are updated at the same time, you can use itertools.chain to group them. See cycle_gan_model.py for an example.
-            self.optimizer = torch.optim.Adam(self.netG.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
+            self.optimizer = torch.optim.Adam(self.netG.parameters(), lr=opt['lr'], betas=(opt['beta1'], 0.999))
             self.optimizers = [self.optimizer]
 
         # Our program will automatically call <model.setup> to define schedulers, load networks, and print networks
@@ -75,7 +75,7 @@ class TemplateModel(BaseModel):
         Parameters:
             input: a dictionary that contains the data itself and its metadata information.
         """
-        AtoB = self.opt.direction == 'AtoB'  # use <direction> to swap data_A and data_B
+        AtoB = self.opt['direction'] == 'AtoB'  # use <direction> to swap data_A and data_B
         self.data_A = input['A' if AtoB else 'B'].to(self.device)  # get image data A
         self.data_B = input['B' if AtoB else 'A'].to(self.device)  # get image data B
         self.image_paths = input['A_paths' if AtoB else 'B_paths']  # get image paths

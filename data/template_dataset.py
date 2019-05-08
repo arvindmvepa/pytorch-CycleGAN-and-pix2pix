@@ -19,19 +19,22 @@ from data.base_dataset import BaseDataset, get_transform
 class TemplateDataset(BaseDataset):
     """A template dataset class for you to implement custom datasets."""
     @staticmethod
-    def modify_commandline_options(parser, is_train):
+    def modify_options(opt, is_train):
         """Add new dataset-specific options, and rewrite default values for existing options.
 
         Parameters:
-            parser          -- original option parser
+            opt          -- original option opt
             is_train (bool) -- whether training phase or test phase. You can use this flag to add training-specific or test-specific options.
 
         Returns:
-            the modified parser.
+            the modified opt.
         """
-        parser.add_argument('--new_dataset_option', type=float, default=1.0, help='new dataset option')
-        parser.set_defaults(max_dataset_size=10, new_dataset_option=2.0)  # specify dataset-specific default values
-        return parser
+        opt['new_dataset_option'] = 1.0
+        if 'max_dataset_size' not in opt:
+            opt['max_dataset_size'] = 10
+        if 'new_dataset_option' not in opt:
+            opt['new_dataset_option'] =2.0  # specify dataset-specific default values
+        return opt
 
     def __init__(self, opt):
         """Initialize this dataset class.

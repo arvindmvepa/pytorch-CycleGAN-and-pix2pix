@@ -36,6 +36,8 @@ class GetData(object):
         if self._verbose:
             print(text)
 
+    # this should be buggy now
+    # i think unused
     @staticmethod
     def _get_options(r):
         soup = BeautifulSoup(r.text, 'lxml')
@@ -43,6 +45,8 @@ class GetData(object):
                    if h.text.endswith(('.zip', 'tar.gz'))]
         return options
 
+    # this should be buggy too
+    # i think unused
     def _present_options(self):
         r = requests.get(self.url)
         options = self._get_options(r)
@@ -76,6 +80,7 @@ class GetData(object):
         obj.close()
         os.remove(temp_save_path)
 
+    # unused
     def get(self, save_path, dataset=None):
         """
 
