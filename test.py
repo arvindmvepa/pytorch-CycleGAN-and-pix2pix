@@ -42,6 +42,7 @@ if __name__ == '__main__':
     opt["name"] = "hdf5_cyclegan"
     opt["dataset_mode"] = "hdf5"
     opt["model"] = "cycle_gan"
+    opt['results_dir'] = '/home/arvind/pytorch-CycleGAN-and-pix2pix_/results/'
     opt = TestOptions().process_options(opt)  # get test options
     # hard-code some parameters for test
     opt['num_threads'] = 0   # test code only supports num_threads = 1
