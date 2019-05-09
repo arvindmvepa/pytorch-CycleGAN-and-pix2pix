@@ -50,7 +50,7 @@ class BaseOptions():
         defaults['no_flip'] = True
         defaults['display_winsize'] = 256
         defaults['epoch'] = "latest"
-        defaults['load_iter'] = "0"
+        defaults['load_iter'] = 0
         defaults['verbose'] = True
         defaults['suffix'] = ''
         self.initialized = True
