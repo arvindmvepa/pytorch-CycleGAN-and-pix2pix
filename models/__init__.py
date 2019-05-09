@@ -30,10 +30,6 @@ def find_model_using_name(model_name):
     and it is case-insensitive.
     """
     model_filename = "models." + model_name + "_model"
-    import sys
-    print(model_name)
-    print(model_filename)
-    sys.stdout.flush()
     modellib = importlib.import_module(model_filename)
     model = None
     target_model_name = model_name.replace('_', '') + 'model'

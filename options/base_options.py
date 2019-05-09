@@ -26,7 +26,7 @@ class BaseOptions():
         defaults['name'] = 'experiment_name'
         defaults['gpu_ids'] = '0'
         defaults['checkpoints_dir'] = './checkpoints'
-        defaults['model'] = './cycle_gan'
+        defaults['model'] = 'cycle_gan'
         defaults['input_nc'] = 1
         defaults['output_nc'] = 1
         defaults['ngf'] = 64
