@@ -65,10 +65,16 @@ class BaseOptions():
         if not self.initialized:  # check if it has been initialized
             defaults = self.initialize()
 
+        # update default options with user provided options
+        opt = dict(defaults, **opt)
+
         # modify model-related parser options
         model_name = opt["model"]
         model_option_setter = models.get_option_setter(model_name)
         opt, defaults = model_option_setter(opt, defaults, self.isTrain)
+
+        # update default options with user provided options
+        opt = dict(defaults, **opt)
 
         # modify dataset-related parser options
         dataset_name = opt["dataset_mode"]
