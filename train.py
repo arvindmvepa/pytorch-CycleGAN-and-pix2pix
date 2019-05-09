@@ -26,6 +26,7 @@ from util.visualizer import Visualizer
 
 if __name__ == '__main__':
     opt = dict()
+    opt["display_port"] = 8098
     opt["txt_file_A"] = "/mnt/nas/experiments/CR-ANKLE/amvepa/googlenet_batch-CR-ANKLE-squash_gray_NOAUG-ACQ-DEV-NSE999_2019-01-14/cls0_0.5_cls1_0.5_rr30_rs0.25_rcTrue_bl0.001_gamma0.1_step_epochs20-40_num_epochs50/label_0_train_files.txt"
     opt["txt_file_B"] = "/mnt/nas/experiments/CR-ANKLE/amvepa/googlenet_batch-CR-ANKLE-squash_gray_NOAUG-ACQ-DEV-NSE999_2019-01-14/cls0_0.5_cls1_0.5_rr30_rs0.25_rcTrue_bl0.001_gamma0.1_step_epochs20-40_num_epochs50/label_1_train_files.txt"
     opt["name"] = "hdf5_cyclegan"
