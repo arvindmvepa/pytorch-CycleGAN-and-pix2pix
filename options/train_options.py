@@ -18,7 +18,7 @@ class TrainOptions(BaseOptions):
         defaults['display_port'] = 8097
         defaults['update_html_freq'] = 1000
         defaults['print_freq'] = 100
-        defaults['no_html'] = True
+        defaults['no_html'] = False
         # network saving and loading parameters
         defaults['save_latest_freq'] = 5000
         defaults['save_epoch_freq'] = 5
