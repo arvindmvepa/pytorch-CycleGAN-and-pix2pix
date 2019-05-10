@@ -12,7 +12,7 @@ class TrainOptions(BaseOptions):
         # visdom and HTML visualization parameters
         defaults['display_freq'] = 400
         defaults['display_ncols'] = 4
-        defaults['display_id'] = 1
+        defaults['display_id'] = -1
         defaults['display_server'] = "http://localhost"
         defaults['display_env'] = "main"
         defaults['display_port'] = 8097
