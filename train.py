@@ -34,6 +34,7 @@ if __name__ == '__main__':
     opt["name"] = "hdf5_cyclegan"
     opt["dataset_mode"] = "hdf5"
     opt["model"] = "cycle_gan"
+    opt['checkpoints_dir'] = '/home/arvind/pytorch-CycleGAN-and-pix2pix_/checkpoints/'
     opt = TrainOptions().process_options(opt)   # get training options
     dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
     dataset_size = len(dataset)    # get the number of images in the dataset.
