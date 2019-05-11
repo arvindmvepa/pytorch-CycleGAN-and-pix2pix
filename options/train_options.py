@@ -21,8 +21,8 @@ class TrainOptions(BaseOptions):
         defaults['no_html'] = False
         # network saving and loading parameters
         defaults['save_latest_freq'] = 5000
-        defaults['save_epoch_freq'] = 5
-        defaults['save_by_iter'] = True
+        defaults['save_epoch_freq'] = 1
+        defaults['save_by_iter'] = False
         #defaults['continue_train'] = True
         defaults['continue_train'] = False
         defaults['epoch_count'] = 1
